@@ -1,0 +1,48 @@
+podTemplate(
+//   agentContainer: 'golang',
+//   agentInjection: true,
+  containers: [
+    // containerTemplate(name: 'maven', image: 'maven:3.9.9-eclipse-temurin-17'),
+    containerTemplate(name: 'golang', image: 'golang:1.16.5', command: 'sleep', args: '99d')
+  ]) {
+
+    node(POD_LABEL) {
+        // stage('Get a Maven project') {
+        //     git 'https://github.com/jenkinsci/kubernetes-plugin.git'
+        //     container('maven') {
+        //         stage('Build a Maven project') {
+        //             sh 'mvn -B -ntp clean install'
+        //         }
+        //     }
+        // }
+                stage('trufflehog') {
+            git url: 'https://github.com/trufflesecurity/trufflehog.git', branch: 'main'
+            sh '''
+            curl -OL https://github.com/trufflesecurity/trufflehog/releases/download/v3.82.2/trufflehog_3.82.2_linux_amd64.tar.gz
+            tar -xzvf trufflehog*.tar.gz
+            chmod 777 trufflehog
+            ./trufflehog github --repo https://github.com/trufflesecurity/test_keys
+            '''
+            sh 'pwd'
+            // container('golang') {
+            //     stage('scan triffle') {
+            //         sh 'hostname'
+            //     }
+            //}
+        }
+
+        // stage('Get a Golang project') {
+        //     git url: 'https://github.com/hashicorp/terraform.git', branch: 'main'
+        //     container('golang') {
+        //         stage('Build a Go project') {
+        //             sh '''
+        //             mkdir -p /go/src/github.com/hashicorp
+        //             ln -s `pwd` /go/src/github.com/hashicorp/terraform
+        //             cd /go/src/github.com/hashicorp/terraform && make
+        //             '''
+        //         }
+        //     }
+        // }
+
+    }
+}
